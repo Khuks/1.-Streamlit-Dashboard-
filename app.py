@@ -7,13 +7,7 @@ import plost
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
 
 # Hide hurmburger Menu
-hide_streamlit_style = """
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-</style>
 
-"""
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 with open('style.css') as f:
@@ -84,6 +78,6 @@ if selected=="Dashboard":
     # Row C
     st.markdown('### Line chart')
     st.line_chart(seattle_weather,x='date',y=plot_data,height=plot_height)
-    
+
 else:
     st.title(f"Welcome To {selected} Page")
