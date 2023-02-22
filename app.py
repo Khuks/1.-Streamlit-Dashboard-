@@ -2,7 +2,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
 import plost
-import plotly.express as px
 
 
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
