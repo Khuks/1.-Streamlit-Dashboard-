@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
 import plost
+import plotly.express as px
 
 
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
@@ -76,6 +77,5 @@ if selected=="Dashboard":
     # Row C
     st.markdown('### Line chart')
     st.line_chart(seattle_weather,x='date',y=plot_data,height=plot_height)
-
 else:
     st.title(f"Welcome To {selected} Page")
