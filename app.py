@@ -80,6 +80,10 @@ if selected=="Dashboard":
             legend='button',
             use_container_width=True
         )
-
+    
+    # Row C
+    st.markdown('### Line chart')
+    st.line_chart(seattle_weather,x='date',y=plot_data,height=plot_height)
+    
 else:
     st.title(f"Welcome To {selected} Page")
