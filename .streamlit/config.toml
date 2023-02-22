@@ -1,7 +1,7 @@
 [theme]
+base="dark"
+primaryColor="#ff8c00"
 
-# Primary accent for interactive elements
-primaryColor = '#7792E3'
 
 [browser]
 gatherUsageStats=false
