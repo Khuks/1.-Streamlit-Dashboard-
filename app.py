@@ -2,6 +2,8 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
 import plost
+import requests
+from bs4 import BeautifulSoup
 
 
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
@@ -24,7 +26,7 @@ st.sidebar.subheader('Dashboard ')
 with st.sidebar:
     selected=option_menu(
         menu_title="Main Menu",
-        options=["Dashboard","Analytics"],
+        options=["Dashboard","Web Scrapping","Analytics"],
         default_index=0,
     )
 if selected=="Dashboard":
@@ -42,12 +44,11 @@ if selected=="Dashboard":
     plot_height=st.sidebar.slider('Specify plot height',-200,500,250)
     
     st.sidebar.markdown("<br>",unsafe_allow_html=True)
-    st.sidebar.markdown('''Created by Khulekani Matsebula''')
 
     #Row A
-    st.markdown('### Metrics')
+    st.markdown("<h3 style='text-align: center; color: #ff8c00;'>Metrics</h3>", unsafe_allow_html=True)
     col1,col2,col3 = st.columns(3)
-    col1.metric("Temperature",f"{plot_height} °F",f"{plot_height} °F")
+    col1.metric("Temperature","80 °F","5°F")
     col2.metric("Wind","9 mph","-8%")
     col3.metric("Humidity","86%","4%")
 
@@ -57,7 +58,7 @@ if selected=="Dashboard":
     
     c1,c2=st.columns((7,3))
     with c1:
-        st.markdown('### Heatmap')
+        st.markdown("<h3 style='text-align: center; color: #ff8c00;'>Heatmap</h3>", unsafe_allow_html=True)
         plost.time_hist(
             data=seattle_weather,
             date='date',
@@ -70,7 +71,7 @@ if selected=="Dashboard":
             use_container_width=True
         )
     with c2:
-        st.markdown('### Donut Chart')
+        st.markdown("<h3 style='text-align: center; color: #ff8c00;'>Donut Chart</h3>", unsafe_allow_html=True)
         plost.donut_chart(
             data=stocks,
             theta=donut_theta,
@@ -80,7 +81,60 @@ if selected=="Dashboard":
         )
     
     # Row C
-    st.markdown('### Line chart')
+    st.markdown("<h3 style='text-align: center; color: #ff8c00;'>Line Chart</h3>", unsafe_allow_html=True)
     st.line_chart(seattle_weather,x='date',y=plot_data,height=plot_height)
-else:
+elif selected=="Analytics":
     st.title(f"Welcome To {selected} Page")
+else :
+    st.markdown("<h1 style='text-align: center; color: #ff8c00;'>Web Scrapping</h1>", unsafe_allow_html=True)
+    tag=st.selectbox('Choose a topic',['love','humor','life','books','inspirational','reading','friendship','friends','truth'])
+
+    #BUTTON TO GENERATE CSV
+    #generate = st.button('Download CSV')
+    st.markdown("<h3 style='text-align: center; color: #ff8c00;'>Quotes</h3>", unsafe_allow_html=True)
+
+   #ACCESS THE URL 
+    url =f"https://quotes.toscrape.com/tag/{tag}/"
+    res = requests.get(url)
+
+    # USE BEAUTIFUL SOUP TO ACCESS THE CONTENT ON THE REQUESTED URL
+    content =  BeautifulSoup(res.content,'html.parser')
+    quotes = content.find_all('div',class_='quote')
+
+    quote_file = []
+    for quote in quotes:
+        text = quote.find('span',class_ ='text').text
+        author = quote.find('small',class_ = 'author').text
+        link =  quote.find('a')
+        st.markdown("""---""")
+        st.success(text)
+        st.markdown(f"<a href=https://quotes.toscrape.com{link['href']}>{author}</a>",unsafe_allow_html=True)
+        st.code(f"https://quotes.toscrape.com{link['href']}")
+        quote_file.append([text,author,link['href']])
+    
+    #if generate:
+        try:
+            df = pd.DataFrame(quote_file)
+            df.to_csv('Quotes.csv',index=False,header=['Quote','Author','Link'],encoding='cp1252')  
+        except: 
+            st.write('Loading ...')
+   
+    def convert_df(data):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+        return data.to_csv(index=False).encode('cp1252')
+    
+    df = pd.DataFrame(quote_file)
+    df.columns=['Quote','Author','Link']
+    csv = convert_df(df)
+    
+    #df.to_csv('Quotes.csv',index=False,header=['Quote','Author','Link'],encoding='cp1252')  
+    st.markdown("""---""")
+    st.download_button(
+        label="Download data as CSV",
+        data=csv,
+        file_name='Quotes.csv',
+        mime='text/csv',
+        )
+    
+    
+st.sidebar.markdown('''Created by Khulekani Matsebula''')
